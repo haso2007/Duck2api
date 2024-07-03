@@ -12,12 +12,28 @@ import (
 
 	"github.com/acheong08/endless"
 	"github.com/joho/godotenv"
-)
 
+	"fmt"
+    	"net/http"
+    	"time"
+)
+func keepAwake() {
+    for {
+        resp, err := http.Get("https://duck2api-xnk4.onrender.com")//need deploy to render and get it's URL first
+        if err != nil {
+            fmt.Printf("Failed to send keep awake request: %v\n", err)
+        } else {
+            fmt.Println("Keep awake request sent. Status:", resp.Status)
+            resp.Body.Close()
+        }
+        time.Sleep(10 * time.Minute)
+    }
+}
 //go:embed web/*
 var staticFiles embed.FS
 
 func main() {
+	go keepAwake()
 	_ = godotenv.Load(".env")
 	gin.SetMode(gin.ReleaseMode)
 	router := initialize.RegisterRouter()
